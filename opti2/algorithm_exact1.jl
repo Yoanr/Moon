@@ -15,18 +15,18 @@ function printMoonMap(moonMap)
   println("=============")
 end
 
-function calcul(moonMap,moonPrice)
+function calcMoonTotal(moonMap, moonPrices)
   price = 0
   h = length(moonMap[1:end, 1])
-  x =  length(moonMap[1, 1:end])
-for x in moon
-  for y in h
+  w = length(moonMap[1, 1:end])
+  for x in 1:w
+    for y in 1:h
       if moonMap[x, y] != 0
-        price = price + moonPrice[x, y]
+        price = price + moonPrices[x][y]
       end
+    end
   end
-end
-return price
+  return price
 end
 
 #moonMap : tableau qui represente la lune avec les cases deja choisie ou non
@@ -52,7 +52,7 @@ function checkAddAdv(moonMap,annonceur)
     end
   end
   return moonMap;
-  end
+end
 
 function listPositions(n, wa, ha, w, h, moonMap)
   if (n === 0)
@@ -63,7 +63,7 @@ function listPositions(n, wa, ha, w, h, moonMap)
       for y in 1:h
         adv = (n, wa[n], ha[n], x, y)
         println(adv)
-        newMoonMap = checkAddAdv(moonMap, adv)
+        newMoonMap = checkAddAdv(copy(moonMap), adv)
         if (newMoonMap !== nothing)
           printMoonMap(newMoonMap)
           moonMaps = vcat(moonMaps, listPositions(n-1, wa, ha, w, h, newMoonMap))
@@ -74,6 +74,7 @@ function listPositions(n, wa, ha, w, h, moonMap)
         end
       end
     end
+    moonMaps = vcat(copy(moonMaps), listPositions(n-1, wa, ha, w, h, moonMap))
     return moonMaps
   end
 end
@@ -91,9 +92,21 @@ function run(inst, sol)
   moonMaps = listPositions(inst.n, inst.wa, inst.ha, inst.w, inst.h, moonMap)
 
   println("/////////// RESULTATS POSSIBLES /////////////////")
+  best = moonMap
+  bestValue = 0
   for map in moonMaps
     printMoonMap(map)
+    price = calcMoonTotal(map, inst.ω)
+    println(price)
+    if price > bestValue
+      bestValue = price
+      best = map
+    end
   end
+
+  println("/////////// RESULTATS POSSIBLES /////////////////")
+  printMoonMap(best)
+  println(bestValue)  
 end
 
 @doc """
