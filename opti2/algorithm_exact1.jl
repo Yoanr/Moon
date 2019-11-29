@@ -15,17 +15,23 @@ function printMoonMap(moonMap)
   println("=============")
 end
 
-function calcMoonTotal(moonMap, moonPrices)
-  price = 0
+function calcMoonTotal(moonMap, moonPrices, ma)
+  costs = zeros(Int64, 1, length(ma))
   h = length(moonMap[1:end, 1])
   w = length(moonMap[1, 1:end])
   for x in 1:w
     for y in 1:h
       if moonMap[x, y] != 0
-        price = price + moonPrices[x][y]
+        costs[moonMap[x, y]] = costs[moonMap[x, y]] + moonPrices[x][y]
       end
     end
   end
+
+  price = 0
+  for id in 1:length(costs)
+    price = price + min(costs[id], ma[id])
+  end
+
   return price
 end
 
@@ -96,7 +102,7 @@ function run(inst, sol)
   bestValue = 0
   for map in moonMaps
     printMoonMap(map)
-    price = calcMoonTotal(map, inst.ω)
+    price = calcMoonTotal(map, inst.ω, inst.ma)
     println(price)
     if price > bestValue
       bestValue = price
@@ -104,7 +110,7 @@ function run(inst, sol)
     end
   end
 
-  println("/////////// RESULTATS POSSIBLES /////////////////")
+  println("/////////// RESULTAT OPTIMAL /////////////////")
   printMoonMap(best)
   println(bestValue)  
 end
