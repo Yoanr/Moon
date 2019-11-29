@@ -19,8 +19,8 @@ function calcMoonTotal(moonMap, moonPrices, ma)
   costs = zeros(Int64, 1, length(ma))
   h = length(moonMap[1:end, 1])
   w = length(moonMap[1, 1:end])
-  for x in 1:w
-    for y in 1:h
+  for x in 1:h
+    for y in 1:w
       if moonMap[x, y] != 0
         costs[moonMap[x, y]] = costs[moonMap[x, y]] + moonPrices[x][y]
       end
