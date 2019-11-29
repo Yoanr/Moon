@@ -15,6 +15,20 @@ function printMoonMap(moonMap)
   println("=============")
 end
 
+function calcul(moonMap,moonPrice)
+  price = 0
+  h = length(moonMap[1:end, 1])
+  x =  length(moonMap[1, 1:end])
+for x in moon
+  for y in h
+      if moonMap[x, y] != 0
+        price = price + moonPrice[x, y]
+      end
+  end
+end
+return price
+end
+
 #moonMap : tableau qui represente la lune avec les cases deja choisie ou non
 #annonceur : [n(a),W(a),H(a),x(a),y(a)] tuple ou a est un annonceur
 function checkAddAdv(moonMap,annonceur)
@@ -28,9 +42,13 @@ function checkAddAdv(moonMap,annonceur)
         return nothing
       elseif moonMap[x, y] != 0
         return nothing
-      else
-        moonMap[x, y] = annonceur[1]
       end
+    end
+  end
+
+  for x in annonceur[5]:annonceur[5]+annonceur[3]-1
+    for y in annonceur[4]:annonceur[4]+annonceur[2]-1
+        moonMap[x, y] = annonceur[1]
     end
   end
   return moonMap;
