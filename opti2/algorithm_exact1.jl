@@ -37,8 +37,10 @@ function checkAddAdv(moonMap,annonceur)
   end
 
 function listPositions(n, wa, ha, w, h, moonMap)
-  positions = []
-  if (n > 0)
+  if (n === 0)
+    return [moonMap]
+  else
+    moonMaps = []
     for x in 1:w
       for y in 1:h
         adv = (n, wa[n], ha[n], x, y)
@@ -46,7 +48,7 @@ function listPositions(n, wa, ha, w, h, moonMap)
         newMoonMap = checkAddAdv(moonMap, adv)
         if (newMoonMap !== nothing)
           printMoonMap(newMoonMap)
-          vcat(positions, listPositions(n-1, wa, ha, w, h, newMoonMap))
+          moonMaps = vcat(moonMaps, listPositions(n-1, wa, ha, w, h, newMoonMap))
         else
           println("=============")
           println("nothing")
@@ -54,8 +56,8 @@ function listPositions(n, wa, ha, w, h, moonMap)
         end
       end
     end
+    return moonMaps
   end
-  return positions
 end
 
 ######
@@ -68,9 +70,12 @@ Cette fonction peut renvoyer n'importe quel type de variable (dont rien du tout)
 """ ->
 function run(inst, sol)
   moonMap = zeros(Int64, inst.h, inst.w)
-  positions = listPositions(inst.n, inst.wa, inst.ha, inst.w, inst.h, moonMap)
-  println(positions)
-  println(length(positions))
+  moonMaps = listPositions(inst.n, inst.wa, inst.ha, inst.w, inst.h, moonMap)
+
+  println("/////////// RESULTATS POSSIBLES /////////////////")
+  for map in moonMaps
+    printMoonMap(map)
+  end
 end
 
 @doc """
