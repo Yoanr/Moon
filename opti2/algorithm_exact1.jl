@@ -19,8 +19,8 @@ function calcMoonTotal(moonMap, moonPrices)
   price = 0
   h = length(moonMap[1:end, 1])
   w = length(moonMap[1, 1:end])
-  for x in 1:w
-    for y in 1:h
+  for y in 1:w
+    for x in 1:h
       if moonMap[x, y] != 0
         price = price + moonPrices[x][y]
       end
@@ -30,12 +30,14 @@ function calcMoonTotal(moonMap, moonPrices)
 end
 
 #moonMap : tableau qui represente la lune avec les cases deja choisie ou non
-#annonceur : [n(a),W(a),H(a),x(a),y(a)] tuple ou a est un annonceur
-function checkAddAdv(moonMap,annonceur)
+#annonceur : [n(a),W(a),H(a),m(a),x(a),y(a)] tuple ou a est un annonceur
+#costs: couts des parcelles
+function checkAddAdv(moonMap,annonceur, costs)
   h = length(moonMap[1:end, 1])
   w = length(moonMap[1, 1:end])
-  for x in annonceur[5]:annonceur[5]+annonceur[3]-1
-    for y in annonceur[4]:annonceur[4]+annonceur[2]-1
+  cost = 0
+  for x in annonceur[6]:annonceur[6]+annonceur[3]-1
+    for y in annonceur[5]:annonceur[5]+annonceur[2]-1
       if x > h
         return nothing
       elseif y > w
@@ -43,30 +45,35 @@ function checkAddAdv(moonMap,annonceur)
       elseif moonMap[x, y] != 0
         return nothing
       end
+      cost = cost + costs[x][y]
     end
   end
 
-  for x in annonceur[5]:annonceur[5]+annonceur[3]-1
-    for y in annonceur[4]:annonceur[4]+annonceur[2]-1
+  if (cost > annonceur[4])
+    return nothing
+  end
+
+  for x in annonceur[6]:annonceur[6]+annonceur[3]-1
+    for y in annonceur[5]:annonceur[5]+annonceur[2]-1
         moonMap[x, y] = annonceur[1]
     end
   end
   return moonMap;
 end
 
-function listPositions(n, wa, ha, w, h, moonMap)
+function listPositions(n, wa, ha, ma, w, h, moonMap, costs)
   if (n === 0)
     return [moonMap]
   else
     moonMaps = []
     for x in 1:w
       for y in 1:h
-        adv = (n, wa[n], ha[n], x, y)
+        adv = (n, wa[n], ha[n], ma[n], x, y)
         println(adv)
-        newMoonMap = checkAddAdv(copy(moonMap), adv)
+        newMoonMap = checkAddAdv(copy(moonMap), adv, costs)
         if (newMoonMap !== nothing)
           printMoonMap(newMoonMap)
-          moonMaps = vcat(moonMaps, listPositions(n-1, wa, ha, w, h, newMoonMap))
+          moonMaps = vcat(moonMaps, listPositions(n-1, wa, ha, ma, w, h, newMoonMap, costs))
         else
           println("=============")
           println("nothing")
@@ -74,7 +81,7 @@ function listPositions(n, wa, ha, w, h, moonMap)
         end
       end
     end
-    moonMaps = vcat(copy(moonMaps), listPositions(n-1, wa, ha, w, h, moonMap))
+    moonMaps = vcat(copy(moonMaps), listPositions(n-1, wa, ha, ma, w, h, moonMap, costs))
     return moonMaps
   end
 end
@@ -89,7 +96,7 @@ Cette fonction peut renvoyer n'importe quel type de variable (dont rien du tout)
 """ ->
 function run(inst, sol)
   moonMap = zeros(Int64, inst.h, inst.w)
-  moonMaps = listPositions(inst.n, inst.wa, inst.ha, inst.w, inst.h, moonMap)
+  moonMaps = listPositions(inst.n, inst.wa, inst.ha, inst.ma, inst.w, inst.h, moonMap, inst.ω)
 
   println("/////////// RESULTATS POSSIBLES /////////////////")
   best = moonMap
