@@ -7,22 +7,55 @@ Projet OPTIMISATION 2 - ENSIIE - 2019-2020
 include("./main.jl")
 
 ######
+function printMoonMap(moonMap)
+  println("=============")
+  for h in 1:length(moonMap[1:end, 1])
+    println(moonMap[h, 1:end])
+  end
+  println("=============")
+end
 
 #moonMap : tableau qui represente la lune avec les cases deja choisie ou non
 #annonceur : [n(a),W(a),H(a),x(a),y(a)] tuple ou a est un annonceur
 function checkAddAdv(moonMap,annonceur)
-length = length(moonMap)
-for x in annonceur[4]:annonceur[4]+annonceur[2]
-  for y in annonceur[5]:annonceur[5]+annonceur[3]
-    if x > length
-      return nothing
-    elseif y > length
-      return nothing
-    elseif moonMap[x][y] != 0
-      return nothing
-    else
-      moonMap[x][y] = annonceur[1]
-return moonMap;
+  h = length(moonMap[1:end, 1])
+  w = length(moonMap[1, 1:end])
+  for x in annonceur[5]:annonceur[5]+annonceur[3]-1
+    for y in annonceur[4]:annonceur[4]+annonceur[2]-1
+      if x > h
+        return nothing
+      elseif y > w
+        return nothing
+      elseif moonMap[x, y] != 0
+        return nothing
+      else
+        moonMap[x, y] = annonceur[1]
+      end
+    end
+  end
+  return moonMap;
+  end
+
+function listPositions(n, wa, ha, w, h, moonMap)
+  positions = []
+  if (n > 0)
+    for x in 1:w
+      for y in 1:h
+        adv = (n, wa[n], ha[n], x, y)
+        println(adv)
+        newMoonMap = checkAddAdv(moonMap, adv)
+        if (newMoonMap !== nothing)
+          printMoonMap(newMoonMap)
+          vcat(positions, listPositions(n-1, wa, ha, w, h, newMoonMap))
+        else
+          println("=============")
+          println("nothing")
+          println("=============")
+        end
+      end
+    end
+  end
+  return positions
 end
 
 ######
@@ -34,7 +67,10 @@ Modifie la solution sol de l'instance inst avec l'algorithme suivant
 Cette fonction peut renvoyer n'importe quel type de variable (dont rien du tout), qui sera ensuite traité dans post_process. 
 """ ->
 function run(inst, sol)
-  # Remplir la fonction
+  moonMap = zeros(Int64, inst.h, inst.w)
+  positions = listPositions(inst.n, inst.wa, inst.ha, inst.w, inst.h, moonMap)
+  println(positions)
+  println(length(positions))
 end
 
 @doc """
