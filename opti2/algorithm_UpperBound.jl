@@ -31,22 +31,34 @@ function advertiserNCanBuy(index,moonMap,advColumn,advLine)
         end
       end
     end
-   # print(plotWanted)
-   # print(" ")
+
     if plotWanted > 0
       return true
     end
     return false
 end
 
-function advertisersCanBuy(n,moonMap,moonPrices,advsPrice)
-  for index in 1:n
-    budget_used = alreadyPaidN(index,moonMap,moonPrices)
-    if  budget_used < advsPrice[index]
-      return true
-    end
-  end
-  return false
+function advertisersCanBuy(n,moonMap,advColumn,advLine)
+   h = length(moonMap[1:end, 1])
+   w = length(moonMap[1, 1:end])
+   for index in 1:n
+     if advertiserNCanBuy(index,moonMap,advColumn[index],advLine[index])
+       return true
+     end
+   end
+   return false
+end
+
+function alreadyPaid(n,moonMap,moonPrices,advsPrice)
+   h = length(moonMap[1:end, 1])
+   w = length(moonMap[1, 1:end])
+   for index in 1:n
+     budget_used = alreadyPaidN(index,moonMap,moonPrices)
+     if  budget_used < advsPrice[index]
+       return true
+     end
+   end
+   return false
 end
 
 function alreadyPaidN(index,moonMap,moonPrices)
@@ -76,9 +88,7 @@ function getUpperBound(inst)
   moonMap = zeros(Int64, h, w)
 
 
-  while unsoldPlot(moonMap) && advertisersCanBuy(n,moonMap,moonPrices,advsPrice)
-   # print(unsoldPlot(moonMap))
-    # print(advertisersCanBuy(n,moonMap,moonPrices,advsPrice))
+  while unsoldPlot(moonMap) && advertisersCanBuy(n,moonMap,advsColumn,advsLine) && alreadyPaid(n,moonMap,moonPrices,advsPrice)
   gain = 0
   advertiser = 1
   localx = 1
@@ -88,19 +98,9 @@ function getUpperBound(inst)
       for y in 1:w
         if moonMap[x,y] == 0
           for index in 1:n
-            if advertiserNCanBuy(index,moonMap,advsColumn[index],advsLine[index])
+            if advertiserNCanBuy(index,moonMap,advsColumn[index],advsLine[index]) || alreadyPaidN(index,moonMap,moonPrices) < advsPrice[index]
               budget_used = alreadyPaidN(index,moonMap,moonPrices)
-              print("budget_used :")
-              print(budget_used)
-              print("\n")
-             # print("\n")
               newGain = min(advsPrice[index] - budget_used, moonPrices[x][y])
-             # print("newGain :")
-              #print(newGain)
-              #print("\n")
-             # print("gain :")
-             # print(gain)
-             # print("\n")
               if newGain > gain
                 gain = newGain
                 advertiser = index
@@ -112,9 +112,6 @@ function getUpperBound(inst)
         end
       end
     end
-     # print(localx)
-     # print(localy)
-
       moonMap[localx,localy] = advertiser
       UpperBound = UpperBound + gain
   end
