@@ -1,4 +1,4 @@
-upperBound"""
+"""
 Author : ROCK - MORVAN
 Projet OPTIMISATION 2 - ENSIIE - 2019-2020
 """
@@ -22,7 +22,8 @@ end
 function advertiserNCanBuy(index,moonMap,advColumn,advLine)
   h = length(moonMap[1:end, 1])
   w = length(moonMap[1, 1:end])
-  plotWanted = advColumn * advLine[index]
+
+  plotWanted = advColumn * advLine
     for x in 1:h
      for y in 1:w
         if moonMap[x,y] == index
@@ -30,73 +31,93 @@ function advertiserNCanBuy(index,moonMap,advColumn,advLine)
         end
       end
     end
+   # print(plotWanted)
+   # print(" ")
     if plotWanted > 0
       return true
     end
     return false
 end
 
-function advertisersCanBuy(n,moonMap,advsColumn,advsLine)
+function advertisersCanBuy(n,moonMap,moonPrices,advsPrice)
   for index in 1:n
-    if advertiserNCanBuy(index,moonMap,advColumn[index],advLine[index])
+    budget_used = alreadyPaidN(index,moonMap,moonPrices)
+    if  budget_used < advsPrice[index]
       return true
     end
   end
   return false
 end
 
-function alreadyPaidN(index,moonMap,moonPrices,ma)
+function alreadyPaidN(index,moonMap,moonPrices)
   h = length(moonMap[1:end, 1])
   w = length(moonMap[1, 1:end])
-  localMa = ma
+  localMa = 0
   for x in 1:h
      for y in 1:w
         if moonMap[x,y] == index
-          localMa  = localMa - moonPrices[x][y]
+          localMa  = localMa + moonPrices[x][y]
         end
       end
     end
     return localMa
 end
 
-function getUpperBound(inst,sol)
-  moonPrices = inst.ω
-  advsPrice = inst.ma
-  advsColumn = inst.wa
-  advsLine = inst.ha
+function getUpperBound(inst)
+
+  moonPrices = copy(inst.ω)
+  advsPrice = copy(inst.ma)
+  advsColumn = copy(inst.wa)
+  advsLine = copy(inst.ha)
   n = inst.n
   UpperBound = 0
   h = inst.h
   w = inst.w
   moonMap = zeros(Int64, h, w)
 
-  while unsoldPlot(moonMap) && advertisersCanBuy(n,moonMap,advsColumn,advsLine)
-  gain = 0
-  advertiser = 0
-  localx = 0
-  localy = 0
 
-  for x in 1:h
-    for y in 1:w
-      if moonMap[x,y] == 0
-        for index in 1:n
-          if advertiserNCanBuy(index,moonMap,advColumn[index],advLine[index])
-            budget_used = alreadyPaid(index,moonMap,moonPrices,advColumn[index],advLine[index])
-            newGain = min(advsPrice[index] - budget_used, moonPrices[x][y])
-            if newGain > gain
-              gain = newGain
-              advertiser = index
-              localx = x
-              localy = y
+  while unsoldPlot(moonMap) && advertisersCanBuy(n,moonMap,moonPrices,advsPrice)
+   # print(unsoldPlot(moonMap))
+    # print(advertisersCanBuy(n,moonMap,moonPrices,advsPrice))
+  gain = 0
+  advertiser = 1
+  localx = 1
+  localy = 1
+
+    for x in 1:h
+      for y in 1:w
+        if moonMap[x,y] == 0
+          for index in 1:n
+            if advertiserNCanBuy(index,moonMap,advsColumn[index],advsLine[index])
+              budget_used = alreadyPaidN(index,moonMap,moonPrices)
+              print("budget_used :")
+              print(budget_used)
+              print("\n")
+             # print("\n")
+              newGain = min(advsPrice[index] - budget_used, moonPrices[x][y])
+             # print("newGain :")
+              #print(newGain)
+              #print("\n")
+             # print("gain :")
+             # print(gain)
+             # print("\n")
+              if newGain > gain
+                gain = newGain
+                advertiser = index
+                localx = x
+                localy = y
+              end
             end
           end
         end
       end
     end
-    moonMap[localx,localy] = advertiser
-    UpperBound = UpperBound + gain
-  end
+     # print(localx)
+     # print(localy)
 
+      moonMap[localx,localy] = advertiser
+      UpperBound = UpperBound + gain
+  end
   return UpperBound
 end
 
@@ -109,7 +130,9 @@ Cette fonction peut renvoyer n'importe quel type de variable (dont rien du tout)
 """ ->
 function run(inst, sol)
   upperBound = getUpperBound(inst)
+   print("upperBound : ")
   print(upperBound)
+  print("\n")
 end
 
 @doc """
@@ -123,7 +146,7 @@ end
 
 # Ne pas enlever
 if length(ARGS) > 0
-  input_file = ARGS[1] 
+  input_file = ARGS[1]
   main(input_file)
 end
 
