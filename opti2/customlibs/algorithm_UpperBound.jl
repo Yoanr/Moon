@@ -6,7 +6,16 @@ Projet OPTIMISATION 2 - ENSIIE - 2019-2020
 # Ne pas enlever
 include("./main.jl")
 
-######
+@doc """
+Cette fonction renvoie True toute les cases sur la lune ont été vendue, False sinon
+
+argument :
+moonMap -> tableau de tableau representant la position des annonceurs sur la lune
+
+renvoi :
+Bool -> True / False
+
+""" ->
 function unsoldPlot(moonMap)
   h = length(moonMap[1:end, 1])
   w = length(moonMap[1, 1:end])
@@ -20,6 +29,20 @@ function unsoldPlot(moonMap)
   return false
 end
 
+
+@doc """
+Cette fonction renvoie True si l'annonceur d'indice "index" à acheté la quantité de case qu'ils voulait, False sinon
+
+argument :
+index ->  indice dans le tableau des annonceurs
+moonMap -> tableau de tableau representant la position des annonceurs sur la lune
+advColumn -> tableau 2d contenant le nombre de colonnes du rectangle que chaque annonceur souhaite acheter
+advLine -> tableau 2d contenant le nombre de ligne du rectangle que chaque annonceur souhaite acheter
+
+renvoi :
+Bool -> True / False
+
+""" ->
 function advertiserNCanBuy(index,moonMap,advColumn,advLine)
   h = length(moonMap[1:end, 1])
   w = length(moonMap[1, 1:end])
@@ -39,6 +62,19 @@ function advertiserNCanBuy(index,moonMap,advColumn,advLine)
     return false
 end
 
+@doc """
+Cette fonction renvoie True si tout les annonceurs ont acheté la quantité de case qu'ils voulaient, False sinon
+
+argument :
+n ->  nombre d'annonceurs
+moonMap -> tableau de tableau representant la position des annonceurs sur la lune
+advColumn -> tableau 2d contenant le nombre de colonnes du rectangle que chaque annonceur souhaite acheter
+advLine -> tableau 2d contenant le nombre de ligne du rectangle que chaque annonceur souhaite acheter
+
+renvoi :
+Bool -> True / False
+
+""" ->
 function advertisersCanBuy(n,moonMap,advColumn,advLine)
    h = length(moonMap[1:end, 1])
    w = length(moonMap[1, 1:end])
@@ -50,6 +86,19 @@ function advertisersCanBuy(n,moonMap,advColumn,advLine)
    return false
 end
 
+@doc """
+Cette fonction renvoie True si tout les annonceurs ont utilisé tout leurs argents, False sinon
+
+argument :
+n ->  nombre d'annonceurs
+moonMap -> tableau de tableau representant la position des annonceurs sur la lune
+moonPrices -> tableau 2d contenant le poids de chaque case sur la lune
+advsPrice -> tableau 2d contenant l'argent total possédé pour chaque annonceur
+
+renvoi :
+Bool -> True / False
+
+""" ->
 function alreadyPaid(n,moonMap,moonPrices,advsPrice)
    h = length(moonMap[1:end, 1])
    w = length(moonMap[1, 1:end])
@@ -62,6 +111,19 @@ function alreadyPaid(n,moonMap,moonPrices,advsPrice)
    return false
 end
 
+
+@doc """
+Cette fonction renvoi la somme payé par l'annonceur  d'indice "index"
+
+argument :
+index ->  indice dans le tableau des annonceurs
+moonMap -> tableau de tableau representant la position des annonceurs sur la lune
+moonPrices -> tableau 2d contenant le poids de chaque case sur la lune
+
+renvoi :
+Int64 -> Borne supérieur
+
+""" ->
 function alreadyPaidN(index,moonMap,moonPrices)
   h = length(moonMap[1:end, 1])
   w = length(moonMap[1, 1:end])
@@ -78,8 +140,13 @@ end
 
 @doc """
 Cette fonction renvoi la borne supérieur du problème Moon Ad pour une instance donnée en argument
-argument : inst -> Instance de Moon Ad
-renvoi : Int64 -> Borne supérieur
+
+argument :
+inst -> Instance de Moon Ad
+
+renvoi :
+Int64 -> Borne supérieur
+
 """ ->
 function getUpperBound(inst)
 
