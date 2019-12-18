@@ -3,19 +3,6 @@ Author : ROCK - MORVAN
 Projet OPTIMISATION 2 - ENSIIE - 2019-2020
 """
 
-# Ne pas enlever
-include("./main.jl")
-
-@doc """
-Cette fonction renvoie True toute les cases sur la lune ont été vendue, False sinon
-
-argument :
-moonMap -> tableau de tableau representant la position des annonceurs sur la lune
-
-renvoi :
-Bool -> True / False
-
-""" ->
 function unsoldPlot(moonMap)
   h = length(moonMap[1:end, 1])
   w = length(moonMap[1, 1:end])
