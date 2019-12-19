@@ -24,34 +24,104 @@ function vp(inst, i::Int, l::Int, c::Int)
   return true
 end
 
-function branchAndBound(sol::Solution, eval::Function)
-  place(sol, 1, 2, 3)
-  bound = nothing
+function printNext(next)
+  println("°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°")
+  for n in next
+    printSolution(n[1])
+    println(n[2])
+    println(n[3])
+  end
+  println("°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°°")
+end
 
-  for a in 2:sol.inst.n
-    aSol = copySolution(sol)
-    lowerBound = bound
-    for l in 1:sol.inst.h-sol.inst.ha[a]+1
-      for c in 1:sol.inst.w-sol.inst.wa[a]+1
-        newSol = copySolution(aSol)
-        if (vp(newSol.inst, a, l, c))
-          place(newSol, a, l, c)
-          newBound = eval(newSol)
-          if (bound == nothing || newBound < bound)
-            println("< NEW BOUND")
-            println(newBound)
-            printSolution(newSol)
-            println("NEW BOUND >")
-            lowerBound = newBound
-            aSol = newSol
-          end
+function sortAndFilter(nextNodes, bound)
+  nextNodes = sort(nextNodes, lt=(x,y)->isless(y[3], x[3]))
+  newNodes = []
+  for n in nextNodes
+    if (n[3] <= bound)
+      push!(newNodes, n)
+    end
+  end
+
+  printNext(nextNodes)
+  return newNodes
+end
+
+function branchAndBound(sol::Solution, eval::Function)
+  bound = eval(sol, 0)
+  println("BOUND")
+  println(bound)
+
+  nextNodes = []
+  for l in 1:sol.inst.h-sol.inst.ha[1]+1
+    for c in 1:sol.inst.w-sol.inst.wa[1]+1
+      newSol = copySolution(sol)
+      resultPlace = place(newSol, 1, l, c) # First level only
+      if (resultPlace)
+        newBound = eval(newSol, 1)
+        if (newBound <= bound)
+          push!(nextNodes, (newSol, 1, newBound))
         end
       end
     end
-    bound = lowerBound
-    sol = aSol
+  end
+  newSol = copySolution(sol)
+  newBound = eval(newSol, 1)
+  if (newBound <= bound)
+    push!(nextNodes, (newSol, 1, newBound))
   end
 
+  nextNodes = sortAndFilter(nextNodes, bound)
+  if (length(nextNodes) > 0)
+    sol = nextNodes[1][1]
+    bound = nextNodes[1][3]
+  end
+
+  while (length(nextNodes) > 0)
+    node = nextNodes[1]
+    nextNodes = nextNodes[2:end]
+    nSol = node[1]
+    a = node[2]
+
+    if (a+1 <= sol.inst.n)
+      println("========")
+      printSolution(sol)
+      print("Bound ")
+      print(bound)
+      println("")
+      print("Try ")
+      print(a+1)
+      println("")
+
+      for l in 1:sol.inst.h-sol.inst.ha[a+1]+1
+        for c in 1:sol.inst.w-sol.inst.wa[a+1]+1
+          newSol = copySolution(nSol)
+          resultPlace = place(newSol, a+1, l, c)
+          if (resultPlace)
+            newBound = eval(newSol, a+1)
+            if (newBound <= bound)
+              push!(nextNodes, (newSol, a+1, newBound))
+              nextNodes = sortAndFilter(nextNodes, bound)
+              sol = nextNodes[1][1]
+              bound = nextNodes[1][3]
+            end
+          end
+        end
+      end
+      newSol = copySolution(nSol)
+      newBound = eval(newSol, a+1)
+      if (newBound <= bound)
+        push!(nextNodes, (newSol, a+1, newBound))
+        nextNodes = sortAndFilter(nextNodes, bound)
+        sol = nextNodes[1][1]
+        bound = nextNodes[1][3]
+      end
+    else
+      return nSol
+    end
+  end
+
+  println("END")
   return sol
 end
 

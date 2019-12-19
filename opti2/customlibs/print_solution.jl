@@ -16,5 +16,7 @@ function printSolution(sol::Solution)
         println("")
     end
 
-    println(profit(sol))
+    print("Profit ")
+    print(profit(sol))
+    println("")
 end
