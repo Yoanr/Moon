@@ -43,14 +43,14 @@ function sortAndFilter(nextNodes, bound)
     end
   end
 
-  printNext(nextNodes)
+  # printNext(nextNodes)
   return newNodes
 end
 
 function branchAndBound(sol::Solution, eval::Function)
   bound = eval(sol, 0)
-  println("BOUND")
-  println(bound)
+  # println("BOUND")
+  # println(bound)
 
   nextNodes = []
   for l in 1:sol.inst.h-sol.inst.ha[1]+1
@@ -79,20 +79,10 @@ function branchAndBound(sol::Solution, eval::Function)
 
   while (length(nextNodes) > 0)
     node = nextNodes[1]
-    nextNodes = nextNodes[2:end]
     nSol = node[1]
     a = node[2]
 
     if (a+1 <= sol.inst.n)
-      println("========")
-      printSolution(sol)
-      print("Bound ")
-      print(bound)
-      println("")
-      print("Try ")
-      print(a+1)
-      println("")
-
       for l in 1:sol.inst.h-sol.inst.ha[a+1]+1
         for c in 1:sol.inst.w-sol.inst.wa[a+1]+1
           newSol = copySolution(nSol)
@@ -102,8 +92,6 @@ function branchAndBound(sol::Solution, eval::Function)
             if (newBound <= bound)
               push!(nextNodes, (newSol, a+1, newBound))
               nextNodes = sortAndFilter(nextNodes, bound)
-              sol = nextNodes[1][1]
-              bound = nextNodes[1][3]
             end
           end
         end
@@ -113,9 +101,10 @@ function branchAndBound(sol::Solution, eval::Function)
       if (newBound <= bound)
         push!(nextNodes, (newSol, a+1, newBound))
         nextNodes = sortAndFilter(nextNodes, bound)
-        sol = nextNodes[1][1]
-        bound = nextNodes[1][3]
       end
+      nextNodes = nextNodes[2:end]
+      sol = nextNodes[1][1]
+      bound = nextNodes[1][3]
     else
       return nSol
     end
