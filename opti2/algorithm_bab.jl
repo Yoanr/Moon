@@ -123,8 +123,10 @@ Modifie la solution sol de l'instance inst avec l'algorithme suivant
 Cette fonction peut renvoyer n'importe quel type de variable (dont rien du tout), qui sera ensuite traité dans post_process. 
 """ ->
 function run(inst, sol)
-  finalSol = branchAndBound(sol, upperBound)
-  printSolution(finalSol)
+  println("START BRANCH AND BOUND")
+  sol = branchAndBound(sol, upperBound)
+  println("FINISH BRANCH AND BOUND")
+  printSolution(sol)
 end
 
 @doc """
@@ -133,6 +135,7 @@ Cette fonction est appelée après la fonction `run` et permet de faire de l'aff
 Le paramètre cpu time est le temps de calcul de `run`. Les valeurs de `inst` et `sol` sont les mêmes qu’à la sortie de la fonction run. Enfin, `others` est ce qui est renvoyé par la fonction `run`. Vous pouvez ainsi effectuer des tests et afficher des résultats sans affecter le temps de calcul.
 """ ->
 function post_process(cpu_time::Float64, inst, sol, others)
+  println(cpu_time)
   # Remplir la fonction
 end
 

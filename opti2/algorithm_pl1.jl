@@ -5,6 +5,7 @@ Projet OPTIMISATION 2 - ENSIIE - 2019-2020
 
 # Ne pas enlever
 include("./main.jl")
+include("./customlibs/print_solution.jl")
 
 ######
 # VOTRE CODE
@@ -26,6 +27,7 @@ Cette fonction fait n'importe quoi, c'est juste un exempel de programme linéair
 Cette fonction peut renvoyer n'importe quel type de variable (dont rien du tout), qui sera ensuite traité dans post_process. 
 """ ->
 function run(inst, sol)
+  println("START")
   m = Model(with_optimizer(GLPK.Optimizer))
   @variable(m, y[1:inst.n, 1:inst.h, 1:inst.w], Bin)
   @variable(m, x[1:inst.n, 1:inst.h, 1:inst.w], Bin)
@@ -49,10 +51,22 @@ function run(inst, sol)
   for a in 1:inst.n))
   optimize!(m)
 
-  println(objective_value(m))
-  # println(m)
+  # println(objective_value(m))
+  places = value.(y)
 
-  return nothing
+  for a in 1:inst.n
+    for l in 1:inst.h
+      for c in 1:inst.w
+        if (places[a, l, c] == 1)
+          place(sol, a, l, c)
+        end
+      end
+    end
+  end
+
+  println("END")
+
+  printSolution(sol)
 end
 
 @doc """
@@ -61,22 +75,7 @@ Cette fonction est appelée après la fonction `run` et permet de faire de l'aff
 Le paramètre cpu time est le temps de calcul de `run`. Les valeurs de `inst` et `sol` sont les mêmes qu’à la sortie de la fonction run. Enfin, `others` est ce qui est renvoyé par la fonction `run`. Vous pouvez ainsi effectuer des tests et afficher des résultats sans affecter le temps de calcul.
 """ ->
 function post_process(cpu_time::Float64, inst, sol, others)
-  
-  # Run a renvoyé le modèle et ses variables, qui ont été mis dans others.
-  # m, x, y, z = others
-
-  # print(m)
-
-  # println()
-
-  # println("TERMINAISON : ", termination_status(m))
-  # println("OBJECTIF : $(objective_value(m))")
-  # println("VALEURS de x : $(value.(x))")
-  # println("VALEURS de y : $(value.(y))")
-  # println("VALEURS de z : $(value.(z))")
-
-  # println("Temps de calcul : $cpu_time.")
-
+  println(cpu_time)
 end
 
 # Ne pas enlever
