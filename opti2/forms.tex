@@ -1,0 +1,50 @@
+\documentclass{article}
+\setlength\parindent{0pt}
+\usepackage{mathtools}% http://ctan.org/pkg/mathtools
+\begin{document}
+Fonction objectif:
+\begin{itemize}
+    \item $max(\sum_{a \in A} \sum_{l=0}^{h-H(a)-1} \sum_{c=0}^{w-W(a)-1} w_{a,l,c}*y_{a,l,c})$
+\end{itemize}
+Variables:
+\begin{itemize}
+    \item $y_{a,l,c} = \left\{
+              \begin{array}{ll}
+                  1 & \mbox{si } \text{l'annonceur est placé} \\
+                  0 & \mbox{sinon.}
+              \end{array}
+              \right.$
+    \item $w_{a,l,c} = min(M(a); \sum_{i=l}^{l+H(a)-1} \sum_{j=c}^{c+W(a)-1} \omega_{i,j})$
+    \item $x_{a,l,c} = \left\{
+              \begin{array}{ll}
+                  1 & \mbox{si } \text{la case (l,c) est attribuée à a} \\
+                  0 & \mbox{sinon.}
+              \end{array}
+              \right.$
+\end{itemize}
+Contraintes:
+\begin{itemize}
+    \item $\sum_{l=0}^{h-H(a)-1} \sum_{c=0}^{w-W(a)-1} y_{a,l,c} \leq 1, \forall a \in A$
+    \item $\sum_{a \in A} x_{a,l,c} \leq 1, \forall \left\{
+              \begin{array}{ll}
+                  l \in [\![0;h-1]\!] \\
+                  c \in [\![0;w-1]\!]
+              \end{array}
+              \right.$
+    \item $y_{a,l,c} \leq x_{a,l+i,c+j}, \forall \left\{
+              \begin{array}{ll}
+                  l \in [\![0;h-H(a)-1]\!] \\
+                  c \in [\![0;w-W(a)-1]\!] \\
+                  i \in [\![0; H(a)-1]\!] \\
+                  j \in [\![0; W(a)-1]\!]
+              \end{array}
+              \right.$
+    \item $a_{a,l,c} \leq \sum_{i=0}^{min(l;H(a))} \sum_{j=0}^{min(c;W(a))} y_{a,l-i,c-j}, \forall \left\{
+        \begin{array}{ll}
+            a \in A \\
+            l \in [\![0; h-1]\!] \\
+            c \in [\![0; w-1]\!]
+        \end{array}
+        \right.$
+\end{itemize}
+\end{document}
